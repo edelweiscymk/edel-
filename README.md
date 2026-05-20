@@ -1,2 +1,466 @@
-# edel-
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edelweis - Aplikasi Keuangan Jajan</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .balance-card {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 25px;
+            margin: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(40,167,69,0.3);
+        }
+
+        .balance-card h2 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .balance-amount {
+            font-size: 3em;
+            font-weight: bold;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .menu-item {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border-color: #4a90e2;
+        }
+
+        .menu-item:active {
+            transform: translateY(0);
+        }
+
+        .menu-emoji {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .menu-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .menu-price {
+            font-size: 1.3em;
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .transaction-section {
+            background: #f8f9fa;
+            margin: 20px;
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        .transaction-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .transaction-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: white;
+            border-radius: 10px;
+            border-left: 4px solid #28a745;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .transaction-info {
+            flex: 1;
+        }
+
+        .transaction-name {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .transaction-date {
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .transaction-price {
+            font-weight: bold;
+            color: #dc3545;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            padding: 20px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .btn-reset {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220,53,69,0.4);
+        }
+
+        .btn-export {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-export:hover {
+            background: #138496;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(23,162,184,0.4);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #999;
+        }
+
+        .empty-state i {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 480px) {
+            .menu-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .balance-amount {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🌸 Edelweis 🌸</h1>
+            <p>Aplikasi Keuangan Jajan</p>
+        </div>
+
+        <!-- Balance -->
+        <div class="balance-card">
+            <h2>💰 Total Pengeluaran</h2>
+            <div class="balance-amount" id="totalBalance">Rp 0</div>
+        </div>
+
+        <!-- Menu Items -->
+        <div class="menu-grid">
+            <div class="menu-item" onclick="addTransaction('Donat', 5000)">
+                <div class="menu-emoji">🍩</div>
+                <div class="menu-name">Donat</div>
+                <div class="menu-price">Rp 5.000</div>
+            </div>
+
+            <div class="menu-item" onclick="addTransaction('Pizza', 25000)">
+                <div class="menu-emoji">🍕</div>
+                <div class="menu-name">Pizza</div>
+                <div class="menu-price">Rp 25.000</div>
+            </div>
+
+            <div class="menu-item" onclick="addTransaction('Jus', 8000)">
+                <div class="menu-emoji">🧃</div>
+                <div class="menu-name">Jus</div>
+                <div class="menu-price">Rp 8.000</div>
+            </div>
+
+            <div class="menu-item" onclick="addTransaction('Brownies', 12000)">
+                <div class="menu-emoji">🍫</div>
+                <div class="menu-name">Brownies</div>
+                <div class="menu-price">Rp 12.000</div>
+            </div>
+        </div>
+
+        <!-- Transaction History -->
+        <div class="transaction-section">
+            <h3>📋 Riwayat Transaksi</h3>
+            <div class="transaction-list" id="transactionList">
+                <div class="empty-state">
+                    <div style="font-size: 3em;">🛒</div>
+                    <p>Belum ada transaksi</p>
+                    <p style="font-size: 0.9em;">Klik menu di atas untuk memulai</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="button-group">
+            <button class="btn btn-reset" onclick="resetTransactions()">
+                🔄 Reset
+            </button>
+            <button class="btn btn-export" onclick="exportTransactions()">
+                📊 Export Laporan
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Initialize data from localStorage or empty array
+        let transactions = JSON.parse(localStorage.getItem('edelweisTransactions')) || [];
+
+        // Format currency to Indonesian Rupiah
+        function formatCurrency(amount) {
+            return 'Rp ' + amount.toLocaleString('id-ID');
+        }
+
+        // Add new transaction
+        function addTransaction(name, price) {
+            const transaction = {
+                id: Date.now(),
+                name: name,
+                price: price,
+                date: new Date().toLocaleString('id-ID', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })
+            };
+
+            transactions.push(transaction);
+            localStorage.setItem('edelweisTransactions', JSON.stringify(transactions));
+            
+            updateUI();
+            
+            // Add click animation feedback
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => {
+                if (item.querySelector('.menu-name').textContent === name) {
+                    item.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        item.style.transform = '';
+                    }, 150);
+                }
+            });
+        }
+
+        // Remove single transaction
+        function removeTransaction(id) {
+            transactions = transactions.filter(t => t.id !== id);
+            localStorage.setItem('edelweisTransactions', JSON.stringify(transactions));
+            updateUI();
+        }
+
+        // Reset all transactions
+        function resetTransactions() {
+            if (transactions.length === 0) {
+                alert('Tidak ada transaksi untuk direset!');
+                return;
+            }
+
+            if (confirm('Apakah Anda yakin ingin menghapus semua transaksi?')) {
+                transactions = [];
+                localStorage.setItem('edelweisTransactions', JSON.stringify(transactions));
+                updateUI();
+                alert('Semua transaksi berhasil dihapus!');
+            }
+        }
+
+        // Export transactions
+        function exportTransactions() {
+            if (transactions.length === 0) {
+                alert('Tidak ada transaksi untuk diexport!');
+                return;
+            }
+
+            let report = 'LAPORAN KEUANGAN JAJAN - EDELWEIS\n';
+            report += '=====================================\n\n';
+            
+            let total = 0;
+            transactions.forEach((t, index) => {
+                report += `${index + 1}. ${t.name} - ${formatCurrency(t.price)}\n`;
+                report += `   Tanggal: ${t.date}\n\n`;
+                total += t.price;
+            });
+            
+            report += '=====================================\n';
+            report += `TOTAL PENGELUARAN: ${formatCurrency(total)}\n`;
+            report += `JUMLAH TRANSAKSI: ${transactions.length}\n`;
+            
+            const blob = new Blob([report], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `laporan-keuangan-edelweis-${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert('Laporan berhasil didownload!');
+        }
+
+        // Update UI
+        function updateUI() {
+            // Calculate total
+            const total = transactions.reduce((sum, t) => sum + t.price, 0);
+            
+            // Update balance display
+            document.getElementById('totalBalance').textContent = formatCurrency(total);
+            
+            // Update transaction list
+            const transactionList = document.getElementById('transactionList');
+            
+            if (transactions.length === 0) {
+                transactionList.innerHTML = `
+                    <div class="empty-state">
+                        <div style="font-size: 3em;">🛒</div>
+                        <p>Belum ada transaksi</p>
+                        <p style="font-size: 0.9em;">Klik menu di atas untuk memulai</p>
+                    </div>
+                `;
+            } else {
+                transactionList.innerHTML = transactions
+                    .slice()
+                    .reverse()
+                    .map(t => `
+                        <div class="transaction-item">
+                            <div class="transaction-info">
+                                <div class="transaction-name">${t.name}</div>
+                                <div class="transaction-date">${t.date}</div>
+                            </div>
+                            <div class="transaction-price">${formatCurrency(t.price)}</div>
+                            <button 
+                                onclick="removeTransaction(${t.id})" 
+                                style="background: none; border: none; color: #dc3545; cursor: pointer; font-size: 1.2em; margin-left: 10px; padding: 5px;"
+                                title="Hapus transaksi"
+                            >✕</button>
+                        </div>
+                    `)
+                    .join('');
+            }
+        }
+
+        // Initial UI update
+        updateUI();
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            switch(e.key.toLowerCase()) {
+                case 'd':
+                    addTransaction('Donat', 5000);
+                    break;
+                case 'p':
+                    addTransaction('Pizza', 25000);
+                    break;
+                case 'j':
+                    addTransaction('Jus', 8000);
+                    break;
+                case 'b':
+                    addTransaction('Brownies', 12000);
+                    break;
+            }
+        });
+    </script>
+</body>
+</html>
 
